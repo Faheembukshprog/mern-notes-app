@@ -1,17 +1,5 @@
 const mongoose = require('mongoose')
-const cors = require('cors')
-const express = require("express")
-const myenv = require("dotenv") 
-
-const main_routes = require("./Routes/main_route")
-const notes_routes = require("./Routes/notes_routes")
-const app =  express()
-myenv.config()
-app.use(cors())
-app.use(express.json())
-
-app.use("/api",main_routes)
-app.use("/api/notes",notes_routes)
+const app = require("./app")
 
 mongoose.connect(process.env.MONGO_URI || "mongodb://localhost:27017/notesapp").then(
     ()=>console.log("Db Connected")

@@ -2,9 +2,9 @@ const cat_model =  require("../Models/notes_category_model")
 
 const add_cat = async(req,res)=>{
     try{
-            const {category_name} = req.body
+            const {category_name} = req.body || {}
             
-            if(!category_name){
+            if(typeof category_name !== "string" || !category_name.trim()){
                 return res.status(400).json({
             "status":400,
             "success":false,
@@ -16,7 +16,7 @@ const add_cat = async(req,res)=>{
             const count = await cat_model.countDocuments()
             await cat_model.create({
                 _id : count +1,
-                category_name:category_name
+                category_name:category_name.trim()
             })
 
             return       res.status(201).json({
@@ -61,7 +61,24 @@ const update_api = async(req,res)=>{
 
      const category_id = req.params.id
 
-     const {category_name} =  req.body
+     const {category_name} = req.body || {}
+
+     if(!/^[1-9]\d*$/.test(category_id)){
+        return res.status(400).json({
+            status:400,
+            success:false,
+            message:"Invalid category ID",
+            data:[]
+        })
+     }
+     if(typeof category_name !== "string" || !category_name.trim()){
+        return res.status(400).json({
+            status:400,
+            success:false,
+            message:"Category name is required",
+            data:[]
+        })
+     }
 
      try{
         const existing_record = await cat_model.findOne({_id:category_id})
@@ -82,7 +99,7 @@ const update_api = async(req,res)=>{
                 },
               {
                   $set:{
-                    category_name : category_name
+                    category_name : category_name.trim()
                 }
               }
             )
@@ -106,6 +123,14 @@ const update_api = async(req,res)=>{
 
 const delete_api = async (req,res)=>{
     const category_id =  req.params.id
+    if(!/^[1-9]\d*$/.test(category_id)){
+        return res.status(400).json({
+            status:400,
+            success:false,
+            message:"Invalid category ID",
+            data:[]
+        })
+    }
 
 try{
     const exsiting_record =  await cat_model.findOne({_id:category_id})
