@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import {useFormik} from 'formik'
 import * as Yup from 'yup'
-import { Singup } from '../services/authsservice'
+import { Link } from 'react-router-dom'
+import { signup } from '../services/authsservice'
 
 function Signup() {
 
@@ -18,10 +19,17 @@ function Signup() {
                 password : Yup.string().required("Password is required").min(7,"minimuim 7 characters")
                 
             }),
-            onSubmit :  async (values)=>{
-                     const res =  await Singup(values.username, values.email,values.password)
+            onSubmit :  async (values, { setSubmitting })=>{
+                try {
+                    const res = await signup(values.username, values.email, values.password)
                     setMessage(res.message)
                     setstatus(res.success)
+                } catch (error) {
+                    setMessage(error.message)
+                    setstatus(false)
+                } finally {
+                    setSubmitting(false)
+                }
             }
         }
     )
@@ -52,7 +60,7 @@ function Signup() {
                      className= { !formik.isValid ? 
                         'bg-gray-400 text-black-400 rounded-lg text-sm px-5 py-2' 
                         : 'bg-green-800 text-white rounded-lg text-sm px-5 py-2'}
-                    type='submit'  >Signup</button>
+                    type='submit' disabled={formik.isSubmitting} >{formik.isSubmitting ? 'Creating account…' : 'Signup'}</button>
           </form>
             
           
@@ -72,6 +80,9 @@ function Signup() {
             message && <p className={status ? 'text-green-600  font-bold  mx-89' :  'text-red-600  font-bold  mx-89'} >
                 {message}</p>
         }
+        <p className='mt-4 text-center text-sm text-slate-600'>
+            Already registered? <Link to='/login' className='font-medium text-blue-700 hover:underline'>Sign in</Link>
+        </p>
  </div>
 
 }
