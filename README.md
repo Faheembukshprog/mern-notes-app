@@ -5,7 +5,7 @@ A full-stack notes app for organizing ideas with categories and JWT-authenticate
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.19%2B%20%7C%2022.12%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-8+-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Mongoose](https://img.shields.io/badge/Mongoose-9-880000)](https://mongoosejs.com/)
@@ -13,8 +13,8 @@ A full-stack notes app for organizing ideas with categories and JWT-authenticate
 
 ## Features
 
-- Account signup and login API using bcrypt password hashing and JWTs.
-- Category API for creating, listing, updating, and deleting categories; the current UI supports listing, adding, and deleting.
+- Account signup and login using bcrypt password hashing and JWTs, with frontend login/sign-out.
+- Authenticated category API for creating, listing, updating, and deleting shared categories; the current UI supports listing, adding, and deleting.
 - JWT-protected Notes API with per-user scoping and create, list, update, and delete operations.
 - React dashboard for listing and managing notes, with optional category assignment and loading/error feedback.
 
@@ -29,7 +29,7 @@ A full-stack notes app for organizing ideas with categories and JWT-authenticate
 
 ### Prerequisites
 
-- Node.js 22 or later and npm
+- Node.js 20.19+ (or 22.12+) and npm
 - MongoDB running locally, or a MongoDB connection URI
 
 ### 1. Get the code and install dependencies
@@ -66,6 +66,9 @@ Edit `backend/.env` and set a unique, strong `JWT_SECRET`. Keep `.env` private; 
 | `PORT` | Backend HTTP port | `3000` |
 | `MONGO_URI` | MongoDB connection string | `mongodb://localhost:27017/notesapp` |
 | `JWT_SECRET` | Secret used to sign and verify auth tokens | Set a private value |
+| `CORS_ORIGIN` | Comma-separated allowed browser origins | `http://localhost:5173` |
+
+For a non-default API URL, copy `notes-app/.env.example` to `notes-app/.env` and set `VITE_API_BASE_URL`. Restart Vite after changing frontend environment variables.
 
 ### 3. Start the backend
 
@@ -89,11 +92,20 @@ npm run dev
 
 Open the local URL printed by Vite. The frontend API client currently targets `http://localhost:3000/api`.
 
+Create an account at `/signup`, then sign in at `/login`. The browser stores the JWT in local storage and sends it to protected Notes and category routes. Use **Sign out** to remove the token.
+
 ### 5. Build the frontend
 
 ```sh
 cd notes-app
 npm run build
+```
+
+Run backend security and ownership-scope tests:
+
+```sh
+cd backend
+npm test
 ```
 
 ## API Overview
@@ -104,10 +116,10 @@ All routes are prefixed with `/api`.
 |---|---|---|---|
 | `POST` | `/auth/signup` | Create an account | No |
 | `POST` | `/auth/login` | Sign in and receive a JWT | No |
-| `POST` | `/category/add-cat` | Create a category | No |
-| `GET` | `/category/get-cat` | List categories | No |
-| `PUT` | `/category/update_cat/:id` | Update a category | No |
-| `DELETE` | `/category/delete_cat/:id` | Delete a category | No |
+| `POST` | `/category/add-cat` | Create a shared category | Bearer JWT |
+| `GET` | `/category/get-cat` | List shared categories | Bearer JWT |
+| `PUT` | `/category/update_cat/:id` | Update a shared category | Bearer JWT |
+| `DELETE` | `/category/delete_cat/:id` | Delete a shared category | Bearer JWT |
 | `POST` | `/notes/add-note` | Create a note | Bearer JWT |
 | `GET` | `/notes/get-notes` | List the signed-in user's notes | Bearer JWT |
 | `PUT` | `/notes/update-note/:id` | Update an owned note | Bearer JWT |
@@ -115,10 +127,9 @@ All routes are prefixed with `/api`.
 
 ## Current Limitations
 
-- A frontend login page is not implemented yet. The login API and frontend sign-in service exist, and the Notes service expects a JWT in browser `localStorage` under the key `token`.
-- Category endpoints are currently public and categories are not user-scoped. Add authorization and ownership checks before exposing this API to untrusted users.
-- Automated backend tests have not been added; the backend's current `npm test` script is a placeholder.
+- Categories are shared among authenticated users (not individually owned). Add category ownership and plan a data migration if per-user categories become a requirement.
+- JWTs are stored in browser local storage; evaluate an HttpOnly secure-cookie design before a public production deployment.
 
 ## Security
 
-Never commit `.env` or real credentials. Use a unique production-grade JWT secret, restrict CORS for deployment, and protect category routes before deploying the application publicly.
+Never commit `.env` or real credentials. Use a unique production-grade JWT secret and configure `CORS_ORIGIN` to the exact deployed frontend origin before deployment.
