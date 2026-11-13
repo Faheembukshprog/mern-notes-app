@@ -51,5 +51,7 @@ jobs:
           cache-dependency-path: notes-app/package-lock.json
       - name: Install dependencies
         run: npm ci
+      - name: Audit dependencies
+        run: npm audit
       - name: Build production bundle
         run: npm run build
