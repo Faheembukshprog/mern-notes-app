@@ -5,7 +5,7 @@ A full-stack notes app for organizing ideas with categories and JWT-authenticate
 [![CI](https://github.com/Faheembukshprog/mern-notes-app/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Faheembukshprog/mern-notes-app/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-not%20specified-lightgrey)](#license)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.19%2B%20%7C%2022.12%2B-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
@@ -19,7 +19,7 @@ A full-stack notes app for organizing ideas with categories and JWT-authenticate
 - **JWT route guards:** Authenticated category and Notes routes verify bearer tokens.
 - **User-scoped data:** Notes reads and mutations are constrained to the authenticated user.
 - **Production safeguards:** Startup validates required environment variables and production CORS origins.
-- **Automated verification:** GitHub Actions audits/tests the backend and builds the frontend on pushes and pull requests to `main`.
+- **Automated verification:** GitHub Actions audits and tests the backend, audits frontend dependencies, and builds the frontend on pushes and pull requests to `main`.
 
 ## GitHub Repository Metadata
 

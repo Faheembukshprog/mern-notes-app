@@ -59,7 +59,7 @@ The stale backend archive, generated frontend build output, and incomplete moder
 - **Resolved:** `App.jsx` imports the correctly cased `Signup.jsx`; `authsservice.js` now calls the backend's `/auth/login` route.
 - **Resolved:** Backend startup fails fast when the MongoDB URI or JWT secret is missing or invalid; JWT signing and verification use only `JWT_SECRET`.
 - **Deployment-ready configuration:** `backend/package.json` provides `npm start`; Render Blueprint config is in `render.yaml`; Vercel SPA routing is in `notes-app/vercel.json`. Production startup requires `CORS_ORIGIN` to contain a valid non-loopback frontend origin.
-- **CI:** `.github/workflows/ci.yml` runs `npm ci`, `npm audit`, and `npm test` for the backend and `npm ci` plus `npm run build` for the frontend on pushes and pull requests targeting `main`.
+- **CI:** `.github/workflows/ci.yml` runs `npm ci`, `npm audit`, and `npm test` for the backend and `npm ci`, `npm audit`, and `npm run build` for the frontend on pushes and pull requests targeting `main`.
 - **Completed:** Added the timestamped, user-scoped Note schema with optional category reference and JWT bearer authentication middleware.
 - **Completed:** Added protected Notes CRUD endpoints with authenticated-user scoping and request validation.
 - **Completed:** Added server-side signup/login validation, generic login failures, safe category ID allocation, and protection against deleting categories still referenced by notes. Signup requires passwords of at least 12 characters.
@@ -69,7 +69,7 @@ The stale backend archive, generated frontend build output, and incomplete moder
 - **Follow-up:** Consider HttpOnly cookies and full end-to-end tests before public production deployment.
 - **Deployment pending:** No cloud resources have been created. Provision Atlas, deploy the Render Blueprint with private `MONGO_URI`/`JWT_SECRET` and the Vercel origin, then deploy `notes-app/` to Vercel with `VITE_API_BASE_URL=<Render URL>/api` and run the live smoke-test checklist in `README.md`.
 - **Documentation/hygiene:** Added the public-facing README, refreshed ignore rules, and removed identified stale/generated artifacts. The workspace is prepared for a GitHub/LinkedIn showcase; production deployment still requires an appropriate secret, deployed-origin CORS configuration, and security review.
-- **Version control:** Git is on `main` with `origin` configured. Preserve unrelated pre-existing uncommitted changes when staging or committing.
+- **Version control:** Git is on `main` with `origin` configured. Published `v1.0.0` points to the audited CI baseline; subsequent hardening and deployment changes belong in a new patch release. Preserve unrelated modernization progress artifacts when staging.
 
 ## Workspace Rules
 
