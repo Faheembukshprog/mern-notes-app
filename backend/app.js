@@ -1,5 +1,3 @@
-require("dotenv").config()
-
 const cors = require("cors")
 const express = require("express")
 const main_routes = require("./Routes/main_route")

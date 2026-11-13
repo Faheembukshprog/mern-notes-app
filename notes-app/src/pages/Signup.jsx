@@ -16,7 +16,7 @@ function Signup() {
             validationSchema : Yup.object({
                 username : Yup.string().required("Username is required"),
                 email : Yup.string().required("Email is required").email("Wrong email Format"),
-                password : Yup.string().required("Password is required").min(7,"minimuim 7 characters")
+                password : Yup.string().required("Password is required").min(12,"Password must be at least 12 characters")
                 
             }),
             onSubmit :  async (values, { setSubmitting })=>{

@@ -1,36 +1,54 @@
 const cat_model =  require("../Models/notes_category_model")
+const counter_model = require("../Models/CategoryCounterModel")
+const Note_model = require("../Models/NoteModel")
+const { nextCategoryId } = require("../utils/categoryId")
+
+const MAX_CATEGORY_NAME_LENGTH = 80
+
+const validCategoryId = (id) => {
+    if (!/^[1-9]\d*$/.test(id)) {
+        return false
+    }
+    return Number.isSafeInteger(Number(id))
+}
+
+const validCategoryName = (name) =>
+    typeof name === "string" &&
+    name.trim().length > 0 &&
+    name.trim().length <= MAX_CATEGORY_NAME_LENGTH
 
 const add_cat = async(req,res)=>{
     try{
             const {category_name} = req.body || {}
             
-            if(typeof category_name !== "string" || !category_name.trim()){
+            if(!validCategoryName(category_name)){
                 return res.status(400).json({
             "status":400,
             "success":false,
-            "message": "Category name is required",
+            "message": "Category name must be between 1 and 80 characters.",
             "data":[]
         })
             }
 
-            const count = await cat_model.countDocuments()
+            const categoryId = await nextCategoryId(cat_model, counter_model)
             await cat_model.create({
-                _id : count +1,
+                _id : categoryId,
                 category_name:category_name.trim()
             })
 
             return       res.status(201).json({
-            "status":200,
+            "status":201,
             "success":true,
             "message": "Record added Successfully",
             "data":[]
         })
     }
     catch(e){
+      console.error("Failed to create category:", e)
       return  res.status(500).json({
             "status":500,
             "success":false,
-            "message": e,
+            "message": "Unable to create category.",
             "data":[]
         })
     }
@@ -48,10 +66,11 @@ const get_cat = async(req,res)=>{
         })
     }
     catch(e){
+      console.error("Failed to fetch categories:", e)
       return  res.status(500).json({
             "status":500,
             "success":false,
-            "message": e,
+            "message": "Unable to fetch categories.",
             "data":[]
         })
     }
@@ -63,7 +82,7 @@ const update_api = async(req,res)=>{
 
      const {category_name} = req.body || {}
 
-     if(!/^[1-9]\d*$/.test(category_id)){
+     if(!validCategoryId(category_id)){
         return res.status(400).json({
             status:400,
             success:false,
@@ -71,11 +90,11 @@ const update_api = async(req,res)=>{
             data:[]
         })
      }
-     if(typeof category_name !== "string" || !category_name.trim()){
+     if(!validCategoryName(category_name)){
         return res.status(400).json({
             status:400,
             success:false,
-            message:"Category name is required",
+            message:"Category name must be between 1 and 80 characters.",
             data:[]
         })
      }
@@ -112,10 +131,11 @@ const update_api = async(req,res)=>{
         }
      }
      catch(e){
+            console.error("Failed to update category:", e)
             return  res.status(500).json({
             "status":500,
             "success":false,
-            "message": e,
+            "message": "Unable to update category.",
             "data":[]
         })
      }
@@ -123,7 +143,7 @@ const update_api = async(req,res)=>{
 
 const delete_api = async (req,res)=>{
     const category_id =  req.params.id
-    if(!/^[1-9]\d*$/.test(category_id)){
+    if(!validCategoryId(category_id)){
         return res.status(400).json({
             status:400,
             success:false,
@@ -133,6 +153,18 @@ const delete_api = async (req,res)=>{
     }
 
 try{
+    const notesUsingCategory = await Note_model.countDocuments({
+        category: Number(category_id)
+    })
+    if(notesUsingCategory > 0){
+        return res.status(409).json({
+            status:409,
+            success:false,
+            message:"Category cannot be deleted while notes use it.",
+            data:[]
+        })
+    }
+
     const exsiting_record =  await cat_model.findOne({_id:category_id})
 
      if(!exsiting_record){
@@ -154,10 +186,11 @@ try{
     
 }
 catch(e){
+    console.error("Failed to delete category:", e)
       return  res.status(500).json({
             "status":500,
             "success":false,
-            "message": e,
+            "message": "Unable to delete category.",
             "data":[]
         })
 }

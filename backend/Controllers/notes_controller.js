@@ -1,9 +1,13 @@
 const mongoose = require("mongoose")
 const Note_model = require("../Models/NoteModel")
+const Category_model = require("../Models/notes_category_model")
+
+const MAX_TITLE_LENGTH = 200
+const MAX_CONTENT_LENGTH = 20000
 
 const isValidCategory = (category) =>
     category === null ||
-    (Number.isInteger(category) && category > 0)
+    (Number.isSafeInteger(category) && category > 0)
 
 const invalidRequest = (res, message) =>
     res.status(400).json({
@@ -11,8 +15,20 @@ const invalidRequest = (res, message) =>
         message
     })
 
+const isPayload = (body) =>
+    body !== null && typeof body === "object" && !Array.isArray(body)
+
+const validText = (value, maxLength) =>
+    typeof value === "string" && value.trim().length > 0 && value.length <= maxLength
+
+const categoryExists = async (category) =>
+    Boolean(await Category_model.exists({ _id: category }))
+
 const createNote = async (req, res) => {
-    const { title, content, category } = req.body || {}
+    if (!isPayload(req.body)) {
+        return invalidRequest(res, "A valid note payload is required")
+    }
+    const { title, content, category } = req.body
     const userId = req.user?.userId
 
     if (!userId || !mongoose.isValidObjectId(userId)) {
@@ -22,12 +38,12 @@ const createNote = async (req, res) => {
         })
     }
 
-    if (typeof title !== "string" || !title.trim()) {
-        return invalidRequest(res, "A non-empty title is required")
+    if (!validText(title, MAX_TITLE_LENGTH)) {
+        return invalidRequest(res, "Title must be a non-empty string of at most 200 characters")
     }
 
-    if (typeof content !== "string" || !content.trim()) {
-        return invalidRequest(res, "Non-empty content is required")
+    if (!validText(content, MAX_CONTENT_LENGTH)) {
+        return invalidRequest(res, "Content must be a non-empty string of at most 20000 characters")
     }
 
     if (category !== undefined && category !== null && !isValidCategory(category)) {
@@ -35,6 +51,10 @@ const createNote = async (req, res) => {
     }
 
     try {
+        if (category !== undefined && category !== null && !(await categoryExists(category))) {
+            return invalidRequest(res, "Category does not exist")
+        }
+
         const note = await Note_model.create({
             userId,
             title: title.trim(),
@@ -82,7 +102,10 @@ const getNotes = async (req, res) => {
 }
 
 const updateNote = async (req, res) => {
-    const { title, content, category } = req.body || {}
+    if (!isPayload(req.body)) {
+        return invalidRequest(res, "A valid note payload is required")
+    }
+    const { title, content, category } = req.body
     const { id } = req.params
     const userId = req.user?.userId
 
@@ -100,14 +123,14 @@ const updateNote = async (req, res) => {
     const setUpdates = {}
     const unsetUpdates = {}
     if (title !== undefined) {
-        if (typeof title !== "string" || !title.trim()) {
-            return invalidRequest(res, "Title must be a non-empty string")
+        if (!validText(title, MAX_TITLE_LENGTH)) {
+            return invalidRequest(res, "Title must be a non-empty string of at most 200 characters")
         }
         setUpdates.title = title.trim()
     }
     if (content !== undefined) {
-        if (typeof content !== "string" || !content.trim()) {
-            return invalidRequest(res, "Content must be a non-empty string")
+        if (!validText(content, MAX_CONTENT_LENGTH)) {
+            return invalidRequest(res, "Content must be a non-empty string of at most 20000 characters")
         }
         setUpdates.content = content
     }
@@ -135,6 +158,10 @@ const updateNote = async (req, res) => {
     }
 
     try {
+        if (category !== undefined && category !== null && !(await categoryExists(category))) {
+            return invalidRequest(res, "Category does not exist")
+        }
+
         const note = await Note_model.findOneAndUpdate(
             { _id: id, userId },
             update,

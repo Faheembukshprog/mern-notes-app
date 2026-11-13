@@ -18,7 +18,7 @@ const authMiddleware = (req, res, next) => {
         })
     }
 
-    const secret = process.env.JWT_SECRET || process.env.JWTSECRETKEY
+    const secret = process.env.JWT_SECRET
     if (!secret) {
         return res.status(500).json({
             success: false,
