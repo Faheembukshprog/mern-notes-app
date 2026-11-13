@@ -69,7 +69,7 @@ The stale backend archive, generated frontend build output, and incomplete moder
 - **Follow-up:** Consider HttpOnly cookies and full end-to-end tests before public production deployment.
 - **Deployment pending:** No cloud resources have been created. Provision Atlas, deploy the Render Blueprint with private `MONGO_URI`/`JWT_SECRET` and the Vercel origin, then deploy `notes-app/` to Vercel with `VITE_API_BASE_URL=<Render URL>/api` and run the live smoke-test checklist in `README.md`.
 - **Documentation/hygiene:** Added the public-facing README, refreshed ignore rules, and removed identified stale/generated artifacts. The workspace is prepared for a GitHub/LinkedIn showcase; production deployment still requires an appropriate secret, deployed-origin CORS configuration, and security review.
-- **Version control:** Git is on `main` with `origin` configured. Published `v1.0.0` points to the audited CI baseline; subsequent hardening and deployment changes belong in a new patch release. Preserve unrelated modernization progress artifacts when staging.
+- **Version control:** Git is on `main` with `origin` configured. Published `v1.0.0` remains pinned to its original audited baseline. The current hardening, CI, and deployment configuration is validated for the next patch release (`v1.0.1`). Preserve unrelated modernization progress artifacts when staging.
 
 ## Workspace Rules
 
