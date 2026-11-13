@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build output and test artifacts
+dist/
+**/dist/
+build/
+**/build/
+coverage/
+.next/
+.vite/
+.cache/
+
+# Local environment files (keep .env.example templates)
+.env*
+!.env.example
+**/.env*
+!**/.env.example
+
+# Logs and operating-system files
+*.log
+npm-debug*.log*
+yarn-debug*.log*
+yarn-error*.log*
+.DS_Store
+Thumbs.db
