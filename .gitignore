@@ -11,6 +11,7 @@ coverage/
 .next/
 .vite/
 .cache/
+.tsupgrader/
 
 # Local environment files (keep .env.example templates)
 .env*
